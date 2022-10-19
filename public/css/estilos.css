@@ -1,0 +1,28 @@
+h1 {
+    color: blue;
+}
+
+label {
+    font-weight: bold;
+    font-style: italic;
+}
+
+.jumbotron {
+    min-height: 100vh;
+}
+
+.buttonVista{
+    margin-top: 20px;
+}
+
+.table-responsive{
+    width: 70%;
+    margin: auto;
+    
+}
+
+.formulario{
+    width: 80%;
+    margin: auto;
+    padding: 20px;
+}
