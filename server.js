@@ -1,7 +1,14 @@
 const express = require("express");
 const PORT = 8081;
+
+const path = require("path");
+const config = require("./config.js");
 const { Server: IOServer } = require("socket.io");
 const { Server: HttpServer } = require("http");
+const session = require("express-session");
+const MongoStore = require("connect-mongo");
+const advancedOptions = { useNewUrlParser: true, useUnifiedTopology: true };
+
 const ProductosC = require("./productosDb");
 const { options } = require("./options/mariaDb");
 const { optionsSqlite } = require("./options/sqlite");
@@ -15,11 +22,64 @@ const io = new IOServer(httpServer);
 let prod = new ProductosC("articulos", options);
 let mens = new Messages("mensajes", optionsSqlite);
 
-app.use(express.static("./public"));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+app.use(
+  session({
+    store: MongoStore.create({
+      mongoUrl: config.mongoRemote.cnxStr,
+      mongoOptions: advancedOptions,
+    }),
+    secret: "shhhhhhhhhhhhhhhhhhhh",
+    resave: false,
+    saveUninitialized: false,
+    rolling: true,
+    cookie: {
+      maxAge: 150000,
+    },
+  })
+);
+
+app.use(express.static("public"));
+
 app.get("/", (req, res) => {
-  res.sendFile("index.html");
+  res.render(path.join(process.cwd(), "/views/index.ejs"), {
+    nombre: req.session.nombre,
+  });
 });
 
+app.get("/login", (req, res) => {
+  const nombre = req.session?.nombre;
+  if (nombre) {
+    res.redirect("/");
+  } else {
+    res.sendFile(path.join(process.cwd(), "./public/login.html"));
+  }
+});
+
+app.post("/login", (req, res) => {
+  const usuario = req.body?.nombre;
+  req.session.nombre = usuario;
+  res.redirect("/");
+});
+
+app.get("/logout", (req, res) => {
+  const nombre = req.session?.nombre;
+  if (nombre) {
+    req.session.destroy((err) => {
+      if (!err) {
+        res.render(path.join(process.cwd(), "/views/logout.ejs"), {
+          nombre,
+        });
+      } else {
+        res.redirect("/login");
+      }
+    });
+  } else {
+    res.redirect("/login");
+  }
+});
 io.on("connection", async (socket) => {
   console.log("Usuario conectado");
 
