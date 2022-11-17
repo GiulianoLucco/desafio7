@@ -8,9 +8,19 @@
     <link rel="stylesheet" href="css/estilos.css">
     <script src="/socket.io/socket.io.js"></script>
     <script src="js/main.js"></script>
+    
   </head>
-
+  
+  
   <body>
+    <div class="container mt-3">
+        <h1 class="alert alert-success">
+            Bienvenido,  <%= nombre %>
+                <button class="btn btn-warning float-right mt-2" onclick="location.href='/logout'">
+                    Desloguear
+                </button>
+        </h1>
+    </div>
       <div class="productos">
         <h1>Formulario Ingreso Productos</h1>
             <form class="formulario" onsubmit="addProduct(this)" autocomplete="off">
@@ -71,4 +81,3 @@
    
   </body>
 </html>
-
