@@ -1,20 +1,41 @@
+const admin = require("firebase-admin");
+const serviceAccount = require("./DAOs/back-end-1a5f6-firebase-adminsdk-jey4z-b394aa2ffc.json");
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+});
+
 class Messages {
-  constructor(table, knex) {
-    this.db = require("knex")(knex);
-    this.table = table;
-  }
+  constructor() {}
 
   async getAll() {
     try {
-      return await this.db.from(this.table).select("*");
+      const db = admin.firestore();
+      const query = db.collection("messages");
+      const querySnapshot = await query.get();
+      let docs = querySnapshot.docs;
+      const response = docs.map((doc) => ({
+        email: doc.data().email,
+        nombre: doc.data().nombre,
+        apellido: doc.data().apellido,
+        edad: doc.data().edad,
+        urlAL: doc.data().urlAL,
+        alias: doc.data().alias,
+        date: doc.data().date,
+      }));
+      return response;
     } catch (err) {
       throw err;
     }
   }
 
-  async addMessage(message) {
+  async addMessage(mensaje) {
+    const db = admin.firestore();
+    const query = db.collection("messages");
     try {
-      return await this.db.from(this.table).insert(message);
+      let doc = query.doc();
+      await doc.create(mensaje);
+      console.log(doc.data());
+      return mensaje;
     } catch (err) {
       throw err;
     }

@@ -26,3 +26,12 @@ label {
     margin: auto;
     padding: 20px;
 }
+
+.formChat{
+    display: flex;
+    flex-direction: column;
+    width: 40%;
+    margin: auto;
+    padding: 20px;
+
+}

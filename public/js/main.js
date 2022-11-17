@@ -16,7 +16,7 @@ function renderProduct(product) {
                             <tr> 
                                 <td>${elemento.nombre}</td>
                                 <td>${elemento.price}</td>
-                                <td><img width="50" src=${elemento.codigo} alt="not found"></td>
+                                <td>${elemento.description}</td>
                             </tr>
                        
                     </table>
@@ -47,8 +47,8 @@ function render(data) {
   const html = data
     .map((elemento) => {
       return `<div>
-                <strong>${elemento.author}</strong>:
-                <em>${elemento.text}</em>
+                <strong>${elemento.email}</strong>:
+                <em>${elemento.nombre}</em>
                 <em>${elemento.date}</em></div>
         `;
     })
@@ -56,12 +56,16 @@ function render(data) {
   document.getElementById("mensajes").innerHTML = html;
 }
 
-function addMessage(e) {
-  const mensaje = {
-    author: document.getElementById("username").value,
-    text: document.getElementById("texto").value,
+function addMessage() {
+  const message = {
+    email: document.getElementById("email").value,
+    nombre: document.getElementById("nombre").value,
+    apellido: document.getElementById("apellido").value,
+    edad: document.getElementById("edad").value,
+    alias: document.getElementById("alias").value,
+    urlA: document.getElementById("urlA").value,
   };
 
-  socket.emit("new-message", mensaje);
+  socket.emit("new-message", message);
   return false;
 }

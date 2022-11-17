@@ -1,8 +1,16 @@
+const { faker } = require("@faker-js/faker");
+
+function generarRandomObj(id) {
+  return {
+    id: id,
+    nombre: faker.commerce.productName(),
+    price: faker.commerce.price(100, 1000, 0, "$"),
+    description: faker.commerce.productDescription(),
+  };
+}
+
 class ProductosC {
-  constructor(table, knex) {
-    this.db = require("knex")(knex);
-    this.table = table;
-  }
+  constructor() {}
 
   async addProduct(product) {
     try {
@@ -14,9 +22,16 @@ class ProductosC {
 
   async getAll() {
     try {
-      return await this.db.from(this.table).select("*");
+      let objetos = [];
+      const cantidadDatos = 5;
+
+      for (let i = 0; i < cantidadDatos; i++) {
+        objetos.push(generarRandomObj(i + 1));
+      }
+
+      return objetos;
     } catch (error) {
-      throw error;
+      console.log(error);
     }
   }
 }

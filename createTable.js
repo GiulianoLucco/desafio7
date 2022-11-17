@@ -9,8 +9,8 @@ class Tables {
       .createTable("articulos", (table) => {
         table.increments("id");
         table.string("nombre", 15).notNullable();
-        table.float("price", 10);
-        table.string("codigo", 100).notNullable();
+        table.float("price");
+        table.string("description", 100).notNullable();
       })
       .then(() => {
         console.log("table created");
@@ -27,8 +27,12 @@ class Tables {
       knexSql.schema
         .createTable("mensajes", (table) => {
           table.increments("id");
-          table.string("author");
-          table.string("text");
+          table.string("email");
+          table.string("nombre");
+          table.string("apellido");
+          table.string("edad");
+          table.string("alias");
+          table.string("avatar");
           table.string("date");
         })
         .then(() => {
