@@ -21,6 +21,7 @@ class Messages {
         urlAL: doc.data().urlAL,
         alias: doc.data().alias,
         date: doc.data().date,
+        text: doc.data().text,
       }));
       return response;
     } catch (err) {
@@ -34,7 +35,6 @@ class Messages {
     try {
       let doc = query.doc();
       await doc.create(mensaje);
-      console.log(doc.data());
       return mensaje;
     } catch (err) {
       throw err;

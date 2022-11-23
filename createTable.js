@@ -34,6 +34,7 @@ class Tables {
           table.string("alias");
           table.string("avatar");
           table.string("date");
+          table.string("text");
         })
         .then(() => {
           console.log("table message created");

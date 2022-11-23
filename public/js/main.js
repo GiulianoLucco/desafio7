@@ -64,6 +64,7 @@ function addMessage() {
     edad: document.getElementById("edad").value,
     alias: document.getElementById("alias").value,
     urlA: document.getElementById("urlA").value,
+    text: document.getElementById("text").value,
   };
 
   socket.emit("new-message", message);

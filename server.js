@@ -1,49 +1,254 @@
 const express = require("express");
 const PORT = 8081;
+
+const path = require("path");
+const config = require("./config.js");
 const { Server: IOServer } = require("socket.io");
 const { Server: HttpServer } = require("http");
-const ProductosC = require("./productosDb.js");
-const { Messages } = require("./DAOs/mensajesDaos.js");
+const session = require("express-session");
+const MongoStore = require("connect-mongo");
+const advancedOptions = { useNewUrlParser: true, useUnifiedTopology: true };
+const cookieParser = require("cookie-parser");
+const hbs = require("express-handlebars");
+const bCrypt = require("bcrypt");
+const mongoose = require("mongoose");
+const UsuarioSchema = require("./models/estudiantes.model.js");
+
+const ProductosC = require("./productosDb");
+const { options } = require("./options/mariaDb");
+const { optionsSqlite } = require("./options/sqlite");
+const Messages = require("./menssagesDb");
 const Tables = require("./createTable.js");
+const passport = require("passport");
+const { Strategy } = require("passport-local");
+
+const localStrategy = Strategy;
 
 const app = express();
+
 const httpServer = new HttpServer(app);
 const io = new IOServer(httpServer);
 
-let prod = new ProductosC();
-const mens = new Messages();
+let prod = new ProductosC("articulos", options);
+let mens = new Messages("mensajes", optionsSqlite);
 
-app.use(express.static("./public"));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+app.use(cookieParser());
+app.use(
+  session({
+    store: MongoStore.create({
+      mongoUrl: config.mongoRemote.cnxStr,
+      mongoOptions: advancedOptions,
+    }),
+    secret: "shhhhhhhhhhhhhhhhhhhh",
+    resave: false,
+    saveUninitialized: false,
+    rolling: true,
+    cookie: {
+      maxAge: 10000,
+    },
+  })
+);
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+passport.use(
+  "register",
+  new localStrategy(
+    { passReqToCallback: true },
+    async (req, username, password, done) => {
+      console.log("register", username + password);
+      mongoose.connect(
+        "mongodb+srv://Giuliano22:Dinero10@cluster0.d1wcvpe.mongodb.net/?retryWrites=true&w=majority"
+      );
+
+      try {
+        UsuarioSchema.create(
+          {
+            username,
+            password: createHash(password),
+            direccion: req.body.direccion,
+          },
+          (err, userWithId) => {
+            if (err) {
+              console.log(err);
+              return done(err, null);
+            }
+            return done(null, userWithId);
+          }
+        );
+      } catch (e) {
+        return done(e, null);
+      }
+    }
+  )
+);
+
+passport.use(
+  "login",
+  new localStrategy((username, password, done) => {
+    mongoose.connect(
+      "mongodb+srv://Giuliano22:Dinero10@cluster0.d1wcvpe.mongodb.net/?retryWrites=true&w=majority"
+    );
+    try {
+      UsuarioSchema.findOne(
+        {
+          username,
+        },
+        (err, user) => {
+          if (err) {
+            return done(err, null);
+          }
+
+          if (!user) {
+            return done(null, false);
+          }
+
+          if (!isValidPassword(user, password)) {
+            return done(null, false);
+          }
+
+          return done(null, user);
+        }
+      );
+    } catch (e) {
+      return done(e, null);
+    }
+  })
+);
+
+//serializar y deserializar
+let datos = null;
+
+passport.serializeUser((usuario, done) => {
+  datos = usuario;
+  done(null, usuario._id);
+});
+
+passport.deserializeUser((id, done) => {
+  UsuarioSchema.findById(id, done);
+});
+
+//
+function createHash(password) {
+  return bCrypt.hashSync(password, bCrypt.genSaltSync(10), null);
+}
+
+function isValidPassword(user, password) {
+  return bCrypt.compareSync(password, user.password);
+}
+
+// motor de vistas
+app.set("views", "./views");
+
+app.engine(
+  ".hbs",
+  hbs.engine({
+    defaultLayout: "main",
+    layoutsDir: "./views/layouts",
+    extname: ".hbs",
+  })
+);
+app.set("view engine", ".hbs");
+//rutas
+app.get("/login", (req, res) => {
+  res.render("login");
+});
+
+app.post(
+  "/login",
+  passport.authenticate("login", {
+    successRedirect: "/datos",
+    failureRedirect: "/login-error",
+  })
+);
+
+app.get("/login-error", (req, res) => {
+  res.render("login-error");
+});
+
+app.get("/registrar", (req, res) => {
+  res.render("register");
+});
+
+app.get("/datos", (req, res) => {
+  console.log(datos);
+  res.render(path.join(process.cwd(), "/views/datos.hbs"), {
+    nombre: datos.username,
+    direccion: datos.direccion,
+  });
+});
+
+app.post(
+  "/registrar",
+  passport.authenticate("register", {
+    successRedirect: "/login",
+    failureRedirect: "/login-error",
+  })
+);
+app.use(express.static("public"));
+
 app.get("/", (req, res) => {
-  res.sendFile("index.html");
+  res.render(path.join(process.cwd(), "/views/index.ejs"), {
+    nombre: req.session.nombre,
+  });
 });
 
-app.get("/api/productos-test", async (req, res) => {
-  const productosFaker = await prod.getAll();
-  res.json(productosFaker);
+app.get("/login", (req, res) => {
+  const nombre = req.session?.nombre;
+  if (nombre) {
+    res.redirect("/");
+  } else {
+    res.sendFile(path.join(process.cwd(), "./public/login.html"));
+  }
 });
 
+app.post("/login", (req, res) => {
+  const usuario = req.body?.nombre;
+  req.session.nombre = usuario;
+  res.redirect("/");
+});
+
+app.get("/logout", (req, res) => {
+  const nombre = req.session?.nombre;
+  if (nombre) {
+    req.session.destroy((err) => {
+      if (!err) {
+        res.render(path.join(process.cwd(), "/views/logout.ejs"), {
+          nombre,
+        });
+      } else {
+        res.redirect("/login");
+      }
+    });
+  } else {
+    res.redirect("/login");
+  }
+});
 io.on("connection", async (socket) => {
   console.log("Usuario conectado");
 
   let productos = await prod.getAll();
   let messages = await mens.getAll();
+
   socket.emit("productos", productos);
 
   socket.on("new-productos", async (data) => {
     await prod.addProduct(data);
     io.sockets.emit("productos", productos);
+    console.log(data);
   });
 
   socket.emit("messages", messages);
 
   socket.on("new-message", async (data) => {
     data.date = new Date().toLocaleDateString();
-
     messages.push(data);
-
-    await mens.addMessage(data);
-    console.log("nuevo mensaje");
+    mens.addMessage(data);
+    console.log(data);
   });
 });
 
