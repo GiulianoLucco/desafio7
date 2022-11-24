@@ -170,7 +170,7 @@ app.get("/login-error", (req, res) => {
   res.render("login-error");
 });
 
-app.get("/registrar", (req, res) => {
+app.get("/", (req, res) => {
   res.render("register");
 });
 
