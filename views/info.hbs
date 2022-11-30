@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+
+    <div class="table-responsive">
+        <table class="table table-dark">
+            <h1>INFO</h1>
+            <tr><td><h3>Process ID : {{idProcess}}</h3></td> </tr>
+            <tr><td><h3>Nombre de Plataforma: {{sistOpe}}</h3></td></tr>
+            <tr><td><h3>Carpeta del proyecto: {{carpetaProye}} </h3></td></tr>
+            <tr>
+                <td><h3>Path de ejecucion: {{pathEjec}} </h3></td>
+            </tr>
+            <tr>
+                <td>
+                    <h3>Version de Node: {{versionNode}} </h3>
+                </td>
+            </tr>
+            <tr>
+                <td><h2>Uso de Memoria </h2></td>
+            </tr>
+            <tr>
+                <td><h4>Rss: {{useMemori.rss}}</h4></td>
+            </tr>
+            <tr>
+                <td><h4>heapTotal: {{useMemori.heapTotal}}</h4></td>
+            </tr>
+            <tr>
+                <td><h4>heapUsed: {{useMemori.heapUsed}}</h4></td>
+            </tr>
+            <tr>
+                <td><h4>External: {{useMemori.external}}</h4></td>
+            </tr>
+            <tr><td><h4>ArrayBuffers:{{useMemori.arrayBuffers}}</h4></td></tr>
+    </div>
+    
+<body>
+    
+</body>
+
+</html>

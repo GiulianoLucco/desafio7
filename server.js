@@ -1,5 +1,6 @@
+require("dotenv").config();
 const express = require("express");
-const PORT = 8081;
+const PORT = process.env.PUERTO;
 
 const path = require("path");
 const config = require("./config.js");
@@ -21,6 +22,7 @@ const Messages = require("./menssagesDb");
 const Tables = require("./createTable.js");
 const passport = require("passport");
 const { Strategy } = require("passport-local");
+const { fork } = require("child_process");
 
 const localStrategy = Strategy;
 
@@ -29,6 +31,7 @@ const app = express();
 const httpServer = new HttpServer(app);
 const io = new IOServer(httpServer);
 
+const forked = fork("child.js");
 let prod = new ProductosC("articulos", options);
 let mens = new Messages("mensajes", optionsSqlite);
 
@@ -228,6 +231,37 @@ app.get("/logout", (req, res) => {
     res.redirect("/login");
   }
 });
+app.get("/api/productos-test", async (req, res) => {
+  const productosFaker = await prod.getAll();
+  res.json(productosFaker);
+});
+
+app.get("/info", (req, res) => {
+  const idProcess = process.pid;
+  const sistOpe = process.platform;
+  const useMemori = process.memoryUsage();
+  const versionNode = process.version;
+  const carpetaProye = process.cwd();
+  const pathEjec = process.execPath;
+
+  res.render(path.join(process.cwd(), "/views/info.hbs"), {
+    idProcess: idProcess,
+    sistOpe: sistOpe,
+    useMemori: useMemori,
+    carpetaProye: carpetaProye,
+    pathEjec: pathEjec,
+    versionNode: versionNode,
+  });
+});
+
+app.get("/api/randoms", (req, res) => {
+  const random = req.query.cant || 100000000;
+  forked.send(random);
+  forked.on("message", (msg) => {
+    res.end(msg);
+  });
+});
+
 io.on("connection", async (socket) => {
   console.log("Usuario conectado");
 
