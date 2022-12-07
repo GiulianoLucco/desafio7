@@ -1,6 +1,7 @@
 require("dotenv").config();
 const express = require("express");
-const PORT = process.env.PUERTO;
+const PORT = parseInt(process.argv[2]) || 8082;
+const cluster = require("cluster");
 
 const path = require("path");
 const config = require("./config.js");
@@ -243,6 +244,7 @@ app.get("/info", (req, res) => {
   const versionNode = process.version;
   const carpetaProye = process.cwd();
   const pathEjec = process.execPath;
+  const numCpus = require("os").cpus().length;
 
   res.render(path.join(process.cwd(), "/views/info.hbs"), {
     idProcess: idProcess,
@@ -251,11 +253,12 @@ app.get("/info", (req, res) => {
     carpetaProye: carpetaProye,
     pathEjec: pathEjec,
     versionNode: versionNode,
+    numCpus: numCpus,
   });
 });
 
 app.get("/api/randoms", (req, res) => {
-  const random = req.query.cant || 100000000;
+  const random = req.query.cant || 100;
   forked.send(random);
   forked.on("message", (msg) => {
     res.end(msg);
