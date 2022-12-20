@@ -4,3 +4,12 @@ pm2 start server.js --name="cluster1" -i max  --watch -- 8181(/api/randoms)
 pm2 start server.js --name="cluster2" -i max  --watch -- 8182(/api/randoms)
 pm2 start server.js --name="cluster3" -i max  --watch -- 8183(/api/randoms)
 
+-----------------------------------------------------------------------------------
+Desafio Clase 32 
+Analisis de performance de servidor
+
+node --prof server.js
+
+ artillery quick -c 50 -n 20 "http://localhost:8082/info" > artillery-info.log
+ 
+ node --prof-process info2-v8.log > info2-log.txt

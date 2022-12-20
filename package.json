@@ -5,13 +5,15 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node benchmarks.js",
+    "start": "0x server.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@faker-js/faker": "^7.6.0",
+    "autocannon": "^7.10.0",
     "bcrypt": "^5.1.0",
     "body-parser": "^1.19.2",
     "connect-mongo": "^4.6.0",
@@ -30,6 +32,7 @@
     "nodemon": "^2.0.20",
     "passport": "^0.5.2",
     "passport-local": "^1.0.0",
+    "pino": "^8.8.0",
     "pm2": "^5.2.2",
     "socket.io": "^4.5.3",
     "sqlite3": "^5.1.2"

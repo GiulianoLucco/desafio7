@@ -24,6 +24,15 @@ const Tables = require("./createTable.js");
 const passport = require("passport");
 const { Strategy } = require("passport-local");
 const { fork } = require("child_process");
+const pino = require("pino");
+
+const loggerError = pino("error.log");
+const loggerWarn = pino("warning.log");
+const loggerInfo = pino();
+
+loggerError.level = "error";
+loggerWarn.leve = "warn";
+loggerInfo.level = "info";
 
 const localStrategy = Strategy;
 
@@ -124,6 +133,13 @@ passport.use(
   })
 );
 
+app.use((req, res, next) => {
+  loggerInfo.info(
+    `Peticion entrante---> Ruta: ${req.url}, metodo: ${req.method}`
+  );
+  next();
+});
+
 //serializar y deserializar
 let datos = null;
 
@@ -171,6 +187,8 @@ app.post(
 );
 
 app.get("/login-error", (req, res) => {
+  loggerError.error("error de datos");
+  loggerInfo.error("error de datos");
   res.render("login-error");
 });
 
@@ -265,6 +283,11 @@ app.get("/api/randoms", (req, res) => {
   });
 });
 
+app.use("*", (req, res) => {
+  loggerWarn.warn("ruta incorrecta");
+  loggerInfo.warn("ruta incorrecta");
+  res.send("ruta incorrecta");
+});
 io.on("connection", async (socket) => {
   console.log("Usuario conectado");
 
