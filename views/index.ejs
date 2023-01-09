@@ -22,31 +22,40 @@
         </h1>
     </div>
       <div class="productos">
-        <h1>Formulario Ingreso Productos</h1>
+     <h1>Formulario Ingreso Productos</h1>
             <form class="formulario" onsubmit="addProduct(this)" autocomplete="off">
         <div class="form-group">
             <label for="nombre">Nombre</label>
-            <input id="name" class="form-control" type="text"  required>
+            <input id="nombre" class="form-control" type="text"  required>
         </div>
-
+        <div class="form-group">
+            <label for="nombre">Cordigo</label>
+            <input id="cordigo" class="form-control" type="number"  required>
+        </div>
+        <div class="form-group">
+            <label for="nombre">Descripcion</label>
+            <input id="descripcion" class="form-control" type="text"  required>
+        </div>
+        <div class="form-group">
+            <label for="nombre">Foto URl</label>
+            <input id="foto" class="form-control" type="text"  required>
+        </div>
         
         <div class="form-group">
-            <label for="price">Precio</label>
-            <input id="price" class="form-control" type="text" step="0.01"  required>
+            <label for="precio">Precio</label>
+            <input id="precio" class="form-control" type="text" step="0.01"  required>
         </div>
         
         <div class="form-group">
-            <label for="codigo">Foto URL</label>
-            <input id="url" class="form-control" type="text" >
+            <label for="stock">Stock</label>
+            <input id="stock" class="form-control" type="number" >
         </div>
 
-        <!-- Botón de envío -->
+       
         <input type="submit" value="Enviar" />
     </form>
-   
-   
     <div class="table-responsive">
-        <table class="table table-dark">     
+        <table class="table table-dark">  
     
         
     <tr> <th>Nombre</th> <th>Precio</th> <th>Foto</th></tr>

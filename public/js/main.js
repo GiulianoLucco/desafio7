@@ -10,17 +10,15 @@ function renderProduct(product) {
     .map((elemento) => {
       return `  
           
-                <div class="table-responsive">
-                    <table class="table table-dark">               
-                        
-                            <tr> 
-                                <td>${elemento.nombre}</td>
-                                <td>${elemento.price}</td>
-                                <td>${elemento.description}</td>
-                            </tr>
-                       
-                    </table>
-                </div>
+               <div class="card" style="width: 18rem;">
+  <img class="card-img-top" src=${elemento.foto} alt="Card image cap">
+  <div class="card-body">
+    <h5 class="card-title">${elemento.nombre}</h5>
+    <h3 class="card-title">Precio: $${elemento.precio}</h3>
+    <p class="card-text">${elemento.descripcion}</p>
+    <a href="#" class="btn btn-primary">Agregar a carrito</a>
+  </div>
+</div>
               
         `;
     })
@@ -28,11 +26,14 @@ function renderProduct(product) {
   document.getElementById("productos").innerHTML = html;
 }
 
-function addProduct(e) {
+function addProduct() {
   const productos = {
-    nombre: document.getElementById("name").value,
-    price: document.getElementById("price").value,
-    codigo: document.getElementById("url").value,
+    nombre: document.getElementById("nombre").value,
+    precio: document.getElementById("precio").value,
+    descripcion: document.getElementById("descripcion").value,
+    foto: document.getElementById("foto").value,
+    stock: document.getElementById("stock").value,
+    codigo: document.getElementById("codigo").value,
   };
 
   socket.emit("new-productos", productos);

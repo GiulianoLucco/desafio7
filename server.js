@@ -1,9 +1,9 @@
 require("dotenv").config();
 const express = require("express");
 const PORT = parseInt(process.argv[2]) || 8082;
-const cluster = require("cluster");
 
 const path = require("path");
+const { createTransport } = require("nodemailer");
 const config = require("./config.js");
 const { Server: IOServer } = require("socket.io");
 const { Server: HttpServer } = require("http");
@@ -81,9 +81,13 @@ passport.use(
       try {
         UsuarioSchema.create(
           {
-            username,
+            username: req.body.username,
             password: createHash(password),
+            nombre: req.body.nombre,
             direccion: req.body.direccion,
+            edad: req.body.edad,
+            telefono: req.body.telefono,
+            avatar: req.body.avatar,
           },
           (err, userWithId) => {
             if (err) {
@@ -133,12 +137,12 @@ passport.use(
   })
 );
 
-app.use((req, res, next) => {
+/*app.use((req, res, next) => {
   loggerInfo.info(
     `Peticion entrante---> Ruta: ${req.url}, metodo: ${req.method}`
   );
   next();
-});
+});*/
 
 //serializar y deserializar
 let datos = null;
@@ -187,8 +191,8 @@ app.post(
 );
 
 app.get("/login-error", (req, res) => {
-  loggerError.error("error de datos");
-  loggerInfo.error("error de datos");
+  //  loggerError.error("error de datos");
+  // loggerInfo.error("error de datos");
   res.render("login-error");
 });
 
@@ -199,18 +203,40 @@ app.get("/", (req, res) => {
 app.get("/datos", (req, res) => {
   console.log(datos);
   res.render(path.join(process.cwd(), "/views/datos.hbs"), {
-    nombre: datos.username,
+    nombre: datos.nombre,
     direccion: datos.direccion,
   });
 });
 
 app.post(
   "/registrar",
-  passport.authenticate("register", {
-    successRedirect: "/login",
-    failureRedirect: "/login-error",
+  passport.authenticate("register", async (req, res) => {
+    console.log(res);
+    const TEST_MAIL = "imani83@ethereal.email";
+    const transporter = createTransport({
+      host: "smtp.ethereal.email",
+      port: 587,
+      auth: {
+        user: TEST_MAIL,
+        pass: "1J7KFkP4jSMUaF42uE",
+      },
+    });
+    const mailOptions = {
+      from: "Servidor Node.js",
+      to: TEST_MAIL,
+      subject: "Mail de prueba desde Node.js",
+      html: `<h1 style="color: blue;">Nuevo usuario registrado <span style="color: green;">Nombre:${res.username}</span></h1>`,
+    };
+    if (res) {
+      const info = await transporter.sendMail(mailOptions);
+      console.log(info);
+      res.render("/login");
+    } else {
+      res.redirect("/login-error");
+    }
   })
 );
+
 app.use(express.static("public"));
 
 app.get("/", (req, res) => {
@@ -250,10 +276,6 @@ app.get("/logout", (req, res) => {
     res.redirect("/login");
   }
 });
-app.get("/api/productos-test", async (req, res) => {
-  const productosFaker = await prod.getAll();
-  res.json(productosFaker);
-});
 
 app.get("/info", (req, res) => {
   const idProcess = process.pid;
@@ -272,14 +294,6 @@ app.get("/info", (req, res) => {
     pathEjec: pathEjec,
     versionNode: versionNode,
     numCpus: numCpus,
-  });
-});
-
-app.get("/api/randoms", (req, res) => {
-  const random = req.query.cant || 100;
-  forked.send(random);
-  forked.on("message", (msg) => {
-    res.end(msg);
   });
 });
 

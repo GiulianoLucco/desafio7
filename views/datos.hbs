@@ -25,39 +25,45 @@
 </div>
 
 <div class="productos">
-  <h1>Formulario Ingreso Productos</h1>
-  <form class="formulario" onsubmit="addProduct(this)" autocomplete="off">
-    <div class="form-group">
-      <label for="nombre">Nombre</label>
-      <input id="name" class="form-control" type="text" required>
-    </div>
-
-
-    <div class="form-group">
-      <label for="price">Precio</label>
-      <input id="price" class="form-control" type="text" step="0.01" required>
-    </div>
-
-    <div class="form-group">
-      <label for="codigo">Foto URL</label>
-      <input id="url" class="form-control" type="text">
-    </div>
-
-    <!-- Botón de envío -->
-    <input type="submit" value="Enviar" />
-  </form>
-
-
-  <div class="table-responsive">
-    <table class="table table-dark">
-
-
-      <tr>
-        <th>Nombre</th>
-        <th>Precio</th>
-        <th>Foto</th>
-      </tr>
-    </table>
+ <!-- <h1>Formulario Ingreso Productos</h1>
+            <form class="formulario"  onsubmit="addProduct(this)" autocomplete="off">
+              <div class="form-group">
+                <label for="nombre">Nombre</label>
+                <input id="nombre" class="form-control" type="text" required>
+              </div>
+              <div class="form-group">
+                <label for="codigo">Codigo</label>
+                <input id="codigo" class="form-control" type="number" required>
+              </div>
+              <div class="form-group">
+                <label for="descripcion">Descripcion</label>
+                <input id="descripcion" class="form-control" type="text" required>
+              </div>
+              <div class="form-group">
+                <label for="foto">Foto URl</label>
+                <input id="foto" class="form-control" type="text" required>
+              </div>
+            
+              <div class="form-group">
+                <label for="precio">Precio</label>
+                <input id="precio" class="form-control" type="text" step="0.01" required>
+              </div>
+            
+              <div class="form-group">
+                <label for="stock">Stock</label>
+                <input id="stock" class="form-control" type="number">
+              </div>
+            
+            
+              <input type="submit" value="Enviar" />
+            </form>
+-->
+<div>
+  <h1>Productos</h1>
+  <nav class="nav"><ul><li><h2>Herramientas Manuales</h2></li>
+  <li><h2>Herramientas Electricas</h2></li>
+  <li><h2>Herramientras Combustion</h2></li></ul></nav>
+</div>
     <div id="productos">
 
     </div>
