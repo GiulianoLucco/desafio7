@@ -3,7 +3,7 @@ const express = require("express");
 const PORT = parseInt(process.argv[2]) || 8082;
 
 const path = require("path");
-const { createTransport } = require("nodemailer");
+
 const config = require("./config.js");
 const { Server: IOServer } = require("socket.io");
 const { Server: HttpServer } = require("http");
@@ -15,6 +15,7 @@ const hbs = require("express-handlebars");
 const bCrypt = require("bcrypt");
 const mongoose = require("mongoose");
 const UsuarioSchema = require("./models/estudiantes.model.js");
+const multer = require("multer");
 
 const ProductosC = require("./productosDb");
 const { options } = require("./options/mariaDb");
@@ -23,8 +24,10 @@ const Messages = require("./menssagesDb");
 const Tables = require("./createTable.js");
 const passport = require("passport");
 const { Strategy } = require("passport-local");
-const { fork } = require("child_process");
+
 const pino = require("pino");
+const Carrito = require("./carrito.js");
+const { registroUsuario } = require("./registroUsuario.js");
 
 const loggerError = pino("error.log");
 const loggerWarn = pino("warning.log");
@@ -41,7 +44,6 @@ const app = express();
 const httpServer = new HttpServer(app);
 const io = new IOServer(httpServer);
 
-const forked = fork("child.js");
 let prod = new ProductosC("articulos", options);
 let mens = new Messages("mensajes", optionsSqlite);
 
@@ -79,24 +81,18 @@ passport.use(
       );
 
       try {
-        UsuarioSchema.create(
-          {
-            username: req.body.username,
-            password: createHash(password),
-            nombre: req.body.nombre,
-            direccion: req.body.direccion,
-            edad: req.body.edad,
-            telefono: req.body.telefono,
-            avatar: req.body.avatar,
-          },
-          (err, userWithId) => {
-            if (err) {
-              console.log(err);
-              return done(err, null);
-            }
-            return done(null, userWithId);
-          }
-        );
+        UsuarioSchema.create({
+          username: req.body.username,
+          password: createHash(password),
+          nombre: req.body.nombre,
+          direccion: req.body.direccion,
+          edad: req.body.edad,
+          telefono: req.body.telefono,
+        });
+        if (UsuarioSchema) {
+          await registroUsuario(UsuarioSchema);
+          return done(null, UsuarioSchema);
+        }
       } catch (e) {
         return done(e, null);
       }
@@ -149,6 +145,10 @@ let datos = null;
 
 passport.serializeUser((usuario, done) => {
   datos = usuario;
+  app.use(function (req, res, next) {
+    res.locals.currentUser = req.usuario;
+    next();
+  });
   done(null, usuario._id);
 });
 
@@ -201,39 +201,40 @@ app.get("/", (req, res) => {
 });
 
 app.get("/datos", (req, res) => {
-  console.log(datos);
+  const datos = res.req.user;
+  console.log(req.session);
+
   res.render(path.join(process.cwd(), "/views/datos.hbs"), {
-    nombre: datos.nombre,
-    direccion: datos.direccion,
+    nombre: datos.nombre || "",
+    foto: datos.avatar,
   });
 });
 
+let storage = multer.diskStorage({
+  destination: function (req, file, callback) {
+    callback(null, "uploads");
+  },
+  filename: function (req, file, callback) {
+    callback(null, file.fieldname);
+  },
+});
+const upload = multer({ storage: storage });
+/*app.post("/registrar", upload.single("imagen"), async (req, res, next) => {
+  const file = await req.body.avatar;
+  if (!file) {
+    const error = new Error("pleaseUploadFile");
+    error.httpStatusCode = 400;
+    return next(error);
+  }
+
+  res.send(file);
+});*/
+
 app.post(
   "/registrar",
-  passport.authenticate("register", async (req, res) => {
-    console.log(res);
-    const TEST_MAIL = "imani83@ethereal.email";
-    const transporter = createTransport({
-      host: "smtp.ethereal.email",
-      port: 587,
-      auth: {
-        user: TEST_MAIL,
-        pass: "1J7KFkP4jSMUaF42uE",
-      },
-    });
-    const mailOptions = {
-      from: "Servidor Node.js",
-      to: TEST_MAIL,
-      subject: "Mail de prueba desde Node.js",
-      html: `<h1 style="color: blue;">Nuevo usuario registrado <span style="color: green;">Nombre:${res.username}</span></h1>`,
-    };
-    if (res) {
-      const info = await transporter.sendMail(mailOptions);
-      console.log(info);
-      res.render("/login");
-    } else {
-      res.redirect("/login-error");
-    }
+  passport.authenticate("register", {
+    successRedirect: "/login",
+    failureRedirect: "/login-error",
   })
 );
 
@@ -258,6 +259,34 @@ app.post("/login", (req, res) => {
   const usuario = req.body?.nombre;
   req.session.nombre = usuario;
   res.redirect("/");
+});
+
+const carrito = new Carrito();
+app.get("/carrito", async (req, res) => {
+  const idList = await carrito.getAll();
+  const carr = idList[0];
+  const listProd = carr.productos;
+
+  const nombreProd = listProd.forEach((element) => {
+    return element.nombre;
+  });
+
+  res.render(path.join(process.cwd(), "/views/carrito.hbs"), {
+    list: nombreProd,
+  });
+});
+
+app.post("/addToCarrito", async (req, res) => {
+  const idProducto = req.body.idProduct;
+
+  const productoAgregado = await carrito.addProductToCarrito(idProducto);
+  res.send(productoAgregado);
+});
+
+app.delete("/deleteToCarrito", async (req, res) => {
+  const idProduct = req.body.idP;
+  const productoDelete = await carrito.producDelete(idProduct);
+  res.send(productoDelete);
 });
 
 app.get("/logout", (req, res) => {
@@ -297,16 +326,19 @@ app.get("/info", (req, res) => {
   });
 });
 
-app.use("*", (req, res) => {
+/*app.use("*", (req, res) => {
   loggerWarn.warn("ruta incorrecta");
   loggerInfo.warn("ruta incorrecta");
   res.send("ruta incorrecta");
-});
+});*/
 io.on("connection", async (socket) => {
   console.log("Usuario conectado");
 
   let productos = await prod.getAll();
   let messages = await mens.getAll();
+  let pCarrito = await carrito.getAll();
+
+  socket.emit("pCarrito", pCarrito);
 
   socket.emit("productos", productos);
 

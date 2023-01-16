@@ -44,4 +44,15 @@ label {
 .nav{
     display: flex;
     justify-content: space-evenly;
+    flex-direction: row;
+}
+
+ul{
+    display: contents;
+    list-style: none;
+
+}
+
+.title{
+    text-align: center;
 }

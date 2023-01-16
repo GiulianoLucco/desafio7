@@ -7,7 +7,6 @@ const UsuariosSchema = new Schema({
   direccion: { type: String, required: true },
   edad: { type: Number, required: true },
   telefono: { type: Number, required: true },
-  avatar: { type: String, required: true },
 });
 
 module.exports = model("Usuarios", UsuariosSchema);

@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="css/estilos.css">
   <script src="/socket.io/socket.io.js"></script>
   <script src="js/main.js"></script>
+  
 
 </head>
 
@@ -18,10 +19,14 @@
 <div class="container mt-3">
     <h1 class="alert alert-success">
     Bienvenido, {{ nombre }}
+    
       <button class="btn btn-warning float-right mt-2" onclick="location.href='/logout'">
         Desloguear
       </button>
+      <img src={{foto}} alt="">
+      <button class="btn btn-success my-3" onclick="location.href ='/carrito'">Ir a Carrito</button>
   </h1>
+  
 </div>
 
 <div class="productos">
@@ -58,8 +63,8 @@
               <input type="submit" value="Enviar" />
             </form>
 -->
-<div>
-  <h1>Productos</h1>
+<div >
+  <h1 class="title">Productos</h1>
   <nav class="nav"><ul><li><h2>Herramientas Manuales</h2></li>
   <li><h2>Herramientas Electricas</h2></li>
   <li><h2>Herramientras Combustion</h2></li></ul></nav>
@@ -91,7 +96,7 @@
     <div id="mensajes"></div>
 
   </div>
-
+ 
   </body>
 
   </html>

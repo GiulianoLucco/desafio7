@@ -4,6 +4,34 @@ socket.on("productos", (product) => {
   renderProduct(product);
 });
 
+function addProductToCart(id) {
+  const idProd = { idProduct: id };
+
+  fetch("http://localhost:8082/addToCarrito", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(idProd),
+  })
+    .then((response) => response.json())
+    .then((data) => console.log(data));
+}
+
+function deleteProduct(id) {
+  console.log(id);
+  const idProd = { idProduct: id };
+  fetch("http://localhost:8082/deleteToCarrito", {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(idProd),
+  })
+    .then((response) => response.json())
+    .then((data) => console.log(data));
+}
+
 function renderProduct(product) {
   console.log(product);
   const html = product
@@ -16,7 +44,7 @@ function renderProduct(product) {
     <h5 class="card-title">${elemento.nombre}</h5>
     <h3 class="card-title">Precio: $${elemento.precio}</h3>
     <p class="card-text">${elemento.descripcion}</p>
-    <a href="#" class="btn btn-primary">Agregar a carrito</a>
+    <button class="btn btn-primary" onClick="addProductToCart('${elemento.idProd}')">Agregar a carrito</button>
   </div>
 </div>
               
@@ -24,6 +52,35 @@ function renderProduct(product) {
     })
     .join(" ");
   document.getElementById("productos").innerHTML = html;
+}
+socket.on("pCarrito", (pCarrito) => {
+  renderCarrito(pCarrito);
+});
+function renderCarrito(pCarrito) {
+  const cartL = pCarrito[0];
+  console.log(cartL);
+  const lista1 = cartL.productos;
+  console.log(lista1);
+  const html = lista1
+    .map((elemento) => {
+      return `  
+          
+               <div class="card" style="width: 18rem;">
+  <img class="card-img-top" src=${elemento.foto} alt="Card image cap">
+  <div class="card-body">
+    <h5 class="card-title">${elemento.nombre}</h5>
+    <h3 class="card-title">Precio: $${elemento.precio}</h3>
+    <p class="card-text">${elemento.descripcion}</p>
+     <p class="card-text">Stock: ${elemento.stock}</p>
+
+    <button class="btn btn-primary" onClick="deleteProduct('${elemento.idP}')">Eliminar del carrito</button>
+  </div>
+</div>
+              
+        `;
+    })
+    .join(" ");
+  document.getElementById("carrito").innerHTML = html;
 }
 
 function addProduct() {

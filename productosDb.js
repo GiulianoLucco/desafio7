@@ -28,12 +28,23 @@ class ProductosC {
         nombre: doc.data().nombre,
         precio: doc.data().precio,
         stock: doc.data().stock,
+        idProd: doc.id,
       }));
       return response;
     } catch (error) {
       console.log(error);
     }
   }
+  async listar(id) {
+    const db = admin.firestore();
+    const query = db.collection("productos");
+    try {
+      const doc = query.doc(String(id));
+      const findId = await doc.get();
+      return findId.data();
+    } catch (error) {
+      console.log("No se encontro el id");
+    }
+  }
 }
-
 module.exports = ProductosC;
