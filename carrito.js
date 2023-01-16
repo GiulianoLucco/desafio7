@@ -60,6 +60,7 @@ class Carrito {
   }
 
   async producDelete(idProd) {
+    console.log(idProd);
     const db = admin.firestore();
     const query = db.collection("carritos");
 
@@ -67,15 +68,15 @@ class Carrito {
       let id = "H7nohfJXZTiXU0Dhfb0H";
       const carrito = await this.listar(id);
       let doc = query.doc(id);
-      console.log(carrito.productos);
-      const productoFilter = carrito.productos.forEach((element) => {
-        return element.idP != idProd;
+      const productoFilter = carrito.productos.filter((element) => {
+        return element.idP !== idProd;
       });
 
       let update = await doc.update({
-        productos: admin.firestore.FieldValue.arrayUnion(productoFilter),
+        productos: productoFilter,
       });
-      console.log(update);
+
+      return update;
     } catch (e) {
       console.log(e);
     }

@@ -2,8 +2,6 @@ require("dotenv").config();
 const express = require("express");
 const PORT = parseInt(process.argv[2]) || 8082;
 
-const path = require("path");
-
 const config = require("./config.js");
 const { Server: IOServer } = require("socket.io");
 const { Server: HttpServer } = require("http");
@@ -17,6 +15,7 @@ const mongoose = require("mongoose");
 const UsuarioSchema = require("./models/estudiantes.model.js");
 const multer = require("multer");
 
+const Carrito = require("./carrito.js");
 const ProductosC = require("./productosDb");
 const { options } = require("./options/mariaDb");
 const { optionsSqlite } = require("./options/sqlite");
@@ -26,8 +25,10 @@ const passport = require("passport");
 const { Strategy } = require("passport-local");
 
 const pino = require("pino");
-const Carrito = require("./carrito.js");
+
 const { registroUsuario } = require("./registroUsuario.js");
+const { rutasUsuario } = require("./Routes/rutasUsuario.js");
+const { rutasCarrito } = require("./Routes/rutasCarrito.js");
 
 const loggerError = pino("error.log");
 const loggerWarn = pino("warning.log");
@@ -178,17 +179,6 @@ app.engine(
 );
 app.set("view engine", ".hbs");
 //rutas
-app.get("/login", (req, res) => {
-  res.render("login");
-});
-
-app.post(
-  "/login",
-  passport.authenticate("login", {
-    successRedirect: "/datos",
-    failureRedirect: "/login-error",
-  })
-);
 
 app.get("/login-error", (req, res) => {
   //  loggerError.error("error de datos");
@@ -196,19 +186,8 @@ app.get("/login-error", (req, res) => {
   res.render("login-error");
 });
 
-app.get("/", (req, res) => {
-  res.render("register");
-});
-
-app.get("/datos", (req, res) => {
-  const datos = res.req.user;
-  console.log(req.session);
-
-  res.render(path.join(process.cwd(), "/views/datos.hbs"), {
-    nombre: datos.nombre || "",
-    foto: datos.avatar,
-  });
-});
+app.use("/", rutasUsuario);
+app.use("/", rutasCarrito);
 
 let storage = multer.diskStorage({
   destination: function (req, file, callback) {
@@ -261,34 +240,6 @@ app.post("/login", (req, res) => {
   res.redirect("/");
 });
 
-const carrito = new Carrito();
-app.get("/carrito", async (req, res) => {
-  const idList = await carrito.getAll();
-  const carr = idList[0];
-  const listProd = carr.productos;
-
-  const nombreProd = listProd.forEach((element) => {
-    return element.nombre;
-  });
-
-  res.render(path.join(process.cwd(), "/views/carrito.hbs"), {
-    list: nombreProd,
-  });
-});
-
-app.post("/addToCarrito", async (req, res) => {
-  const idProducto = req.body.idProduct;
-
-  const productoAgregado = await carrito.addProductToCarrito(idProducto);
-  res.send(productoAgregado);
-});
-
-app.delete("/deleteToCarrito", async (req, res) => {
-  const idProduct = req.body.idP;
-  const productoDelete = await carrito.producDelete(idProduct);
-  res.send(productoDelete);
-});
-
 app.get("/logout", (req, res) => {
   const nombre = req.session?.nombre;
   if (nombre) {
@@ -331,6 +282,8 @@ app.get("/info", (req, res) => {
   loggerInfo.warn("ruta incorrecta");
   res.send("ruta incorrecta");
 });*/
+
+const carrito = new Carrito();
 io.on("connection", async (socket) => {
   console.log("Usuario conectado");
 

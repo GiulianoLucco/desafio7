@@ -19,7 +19,6 @@ function addProductToCart(id) {
 }
 
 function deleteProduct(id) {
-  console.log(id);
   const idProd = { idProduct: id };
   fetch("http://localhost:8082/deleteToCarrito", {
     method: "DELETE",
@@ -27,9 +26,7 @@ function deleteProduct(id) {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(idProd),
-  })
-    .then((response) => response.json())
-    .then((data) => console.log(data));
+  }).then((data) => console.log(data));
 }
 
 function renderProduct(product) {
