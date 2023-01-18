@@ -1,5 +1,5 @@
 const express = require("express");
-const Carrito = require("../carrito.js");
+const Carrito = require("../DAOs/carrito.js");
 const path = require("path");
 
 const rutasCarrito = express.Router();

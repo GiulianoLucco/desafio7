@@ -29,4 +29,12 @@ rutasUsuario.post(
   })
 );
 
+rutasUsuario.post(
+  "/registrar",
+  passport.authenticate("register", {
+    successRedirect: "/login",
+    failureRedirect: "/login-error",
+  })
+);
+
 module.exports = { rutasUsuario };

@@ -2,7 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const PORT = parseInt(process.argv[2]) || 8082;
 
-const config = require("./config.js");
+const config = require("./config/config.js");
 const { Server: IOServer } = require("socket.io");
 const { Server: HttpServer } = require("http");
 const session = require("express-session");
@@ -13,22 +13,22 @@ const hbs = require("express-handlebars");
 const bCrypt = require("bcrypt");
 const mongoose = require("mongoose");
 const UsuarioSchema = require("./models/estudiantes.model.js");
-const multer = require("multer");
 
-const Carrito = require("./carrito.js");
-const ProductosC = require("./productosDb");
+const Carrito = require("./DAOs/carrito.js");
+const ProductosC = require("./DAOs/productosDb");
 const { options } = require("./options/mariaDb");
 const { optionsSqlite } = require("./options/sqlite");
-const Messages = require("./menssagesDb");
-const Tables = require("./createTable.js");
+const Messages = require("./DAOs/menssagesDb");
+const Tables = require("./models/createTable.js");
 const passport = require("passport");
 const { Strategy } = require("passport-local");
 
 const pino = require("pino");
 
-const { registroUsuario } = require("./registroUsuario.js");
+const { registroUsuario } = require("./controller/registroUsuario.js");
 const { rutasUsuario } = require("./Routes/rutasUsuario.js");
 const { rutasCarrito } = require("./Routes/rutasCarrito.js");
+const { rutasInfo } = require("./Routes/rutasInfo.js");
 
 const loggerError = pino("error.log");
 const loggerWarn = pino("warning.log");
@@ -188,94 +188,9 @@ app.get("/login-error", (req, res) => {
 
 app.use("/", rutasUsuario);
 app.use("/", rutasCarrito);
-
-let storage = multer.diskStorage({
-  destination: function (req, file, callback) {
-    callback(null, "uploads");
-  },
-  filename: function (req, file, callback) {
-    callback(null, file.fieldname);
-  },
-});
-const upload = multer({ storage: storage });
-/*app.post("/registrar", upload.single("imagen"), async (req, res, next) => {
-  const file = await req.body.avatar;
-  if (!file) {
-    const error = new Error("pleaseUploadFile");
-    error.httpStatusCode = 400;
-    return next(error);
-  }
-
-  res.send(file);
-});*/
-
-app.post(
-  "/registrar",
-  passport.authenticate("register", {
-    successRedirect: "/login",
-    failureRedirect: "/login-error",
-  })
-);
+app.use("/", rutasInfo);
 
 app.use(express.static("public"));
-
-app.get("/", (req, res) => {
-  res.render(path.join(process.cwd(), "/views/index.ejs"), {
-    nombre: req.session.nombre,
-  });
-});
-
-app.get("/login", (req, res) => {
-  const nombre = req.session?.nombre;
-  if (nombre) {
-    res.redirect("/");
-  } else {
-    res.sendFile(path.join(process.cwd(), "./public/login.html"));
-  }
-});
-
-app.post("/login", (req, res) => {
-  const usuario = req.body?.nombre;
-  req.session.nombre = usuario;
-  res.redirect("/");
-});
-
-app.get("/logout", (req, res) => {
-  const nombre = req.session?.nombre;
-  if (nombre) {
-    req.session.destroy((err) => {
-      if (!err) {
-        res.render(path.join(process.cwd(), "/views/logout.ejs"), {
-          nombre,
-        });
-      } else {
-        res.redirect("/login");
-      }
-    });
-  } else {
-    res.redirect("/login");
-  }
-});
-
-app.get("/info", (req, res) => {
-  const idProcess = process.pid;
-  const sistOpe = process.platform;
-  const useMemori = process.memoryUsage();
-  const versionNode = process.version;
-  const carpetaProye = process.cwd();
-  const pathEjec = process.execPath;
-  const numCpus = require("os").cpus().length;
-
-  res.render(path.join(process.cwd(), "/views/info.hbs"), {
-    idProcess: idProcess,
-    sistOpe: sistOpe,
-    useMemori: useMemori,
-    carpetaProye: carpetaProye,
-    pathEjec: pathEjec,
-    versionNode: versionNode,
-    numCpus: numCpus,
-  });
-});
 
 /*app.use("*", (req, res) => {
   loggerWarn.warn("ruta incorrecta");

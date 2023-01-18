@@ -1,5 +1,5 @@
-const { options } = require("./options/mariaDb");
-const { optionsSqlite } = require("./options/sqlite");
+const { options } = require("../options/mariaDb");
+const { optionsSqlite } = require("../options/sqlite");
 const knex = require("knex")(options);
 const knexSql = require("knex")(optionsSqlite);
 
