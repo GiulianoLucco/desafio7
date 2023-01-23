@@ -29,6 +29,7 @@ const { registroUsuario } = require("./controller/registroUsuario.js");
 const { rutasUsuario } = require("./Routes/rutasUsuario.js");
 const { rutasCarrito } = require("./Routes/rutasCarrito.js");
 const { rutasInfo } = require("./Routes/rutasInfo.js");
+const { routerProductos } = require("./Routes/rutas.Producto.js");
 
 const loggerError = pino("error.log");
 const loggerWarn = pino("warning.log");
@@ -189,6 +190,7 @@ app.get("/login-error", (req, res) => {
 app.use("/", rutasUsuario);
 app.use("/", rutasCarrito);
 app.use("/", rutasInfo);
+app.use("/productos", routerProductos);
 
 app.use(express.static("public"));
 

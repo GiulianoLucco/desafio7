@@ -17,6 +17,12 @@ rutasUsuario.get("/datos", (req, res) => {
   });
 });
 
+rutasUsuario.get("/logout", (req, res) => {
+  res.render(path.join(process.cwd(), "/views/logout.hbs"), {
+    nombre: datos.nombre,
+  });
+});
+
 rutasUsuario.get("/login", (req, res) => {
   res.render("login");
 });

@@ -35,7 +35,7 @@ class ProductosC {
       console.log(error);
     }
   }
-  async listar(id) {
+  async getById(id) {
     const db = admin.firestore();
     const query = db.collection("productos");
     try {
@@ -45,6 +45,12 @@ class ProductosC {
     } catch (error) {
       console.log("No se encontro el id");
     }
+  }
+  static returnSingleton() {
+    if (!this.instance) {
+      this.instance = new ProductosC();
+    }
+    return this.instance;
   }
 }
 module.exports = ProductosC;
