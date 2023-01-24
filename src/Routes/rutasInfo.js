@@ -11,7 +11,7 @@ rutasInfo.get("/info", (req, res) => {
   const pathEjec = process.execPath;
   const numCpus = require("os").cpus().length;
 
-  res.render(path.join(process.cwd(), "/views/info.hbs"), {
+  res.render(path.join(process.cwd(), "/public/views/info.hbs"), {
     idProcess: idProcess,
     sistOpe: sistOpe,
     useMemori: useMemori,

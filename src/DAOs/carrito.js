@@ -43,7 +43,7 @@ class Carrito {
     const query = db.collection("carritos");
     try {
       let id = "H7nohfJXZTiXU0Dhfb0H";
-      let produc = await product.listar(idProd);
+      let produc = await product.getById(idProd);
 
       let doc = query.doc(id);
       produc.idP = idProd;

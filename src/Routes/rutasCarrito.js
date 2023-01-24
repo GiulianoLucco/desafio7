@@ -14,7 +14,7 @@ rutasCarrito.get("/carrito", async (req, res) => {
     return element.nombre;
   });
 
-  res.render(path.join(process.cwd(), "/views/carrito.hbs"), {
+  res.render(path.join(process.cwd(), "/public/views/carrito.hbs"), {
     list: nombreProd,
   });
 });

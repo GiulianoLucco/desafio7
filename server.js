@@ -2,7 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const PORT = parseInt(process.argv[2]) || 8082;
 
-const config = require("./config/config.js");
+const config = require("./src/config/config.js");
 const { Server: IOServer } = require("socket.io");
 const { Server: HttpServer } = require("http");
 const session = require("express-session");
@@ -12,24 +12,24 @@ const cookieParser = require("cookie-parser");
 const hbs = require("express-handlebars");
 const bCrypt = require("bcrypt");
 const mongoose = require("mongoose");
-const UsuarioSchema = require("./models/estudiantes.model.js");
+const UsuarioSchema = require("./src/models/estudiantes.model.js");
 
-const Carrito = require("./DAOs/carrito.js");
-const ProductosC = require("./DAOs/productosDb");
-const { options } = require("./options/mariaDb");
-const { optionsSqlite } = require("./options/sqlite");
-const Messages = require("./DAOs/menssagesDb");
-const Tables = require("./models/createTable.js");
+const Carrito = require("./src/DAOs/carrito.js");
+const ProductosC = require("./src/DAOs/productosDb");
+const { options } = require("./src/options/mariaDb");
+const { optionsSqlite } = require("./src/options/sqlite");
+const Messages = require("./src/DAOs/menssagesDb");
+const Tables = require("./src/models/createTable.js");
 const passport = require("passport");
 const { Strategy } = require("passport-local");
 
 const pino = require("pino");
 
-const { registroUsuario } = require("./controller/registroUsuario.js");
-const { rutasUsuario } = require("./Routes/rutasUsuario.js");
-const { rutasCarrito } = require("./Routes/rutasCarrito.js");
-const { rutasInfo } = require("./Routes/rutasInfo.js");
-const { routerProductos } = require("./Routes/rutas.Producto.js");
+const { registroUsuario } = require("./src/controller/registroUsuario.js");
+const { rutasUsuario } = require("./src/Routes/rutasUsuario.js");
+const { rutasCarrito } = require("./src/Routes/rutasCarrito.js");
+const { rutasInfo } = require("./src/Routes/rutasInfo.js");
+const { routerProductos } = require("./src/Routes/rutas.Producto.js");
 
 const loggerError = pino("error.log");
 const loggerWarn = pino("warning.log");
@@ -92,7 +92,7 @@ passport.use(
           telefono: req.body.telefono,
         });
         if (UsuarioSchema) {
-          await registroUsuario(UsuarioSchema);
+          await registroUsuario(user);
           return done(null, UsuarioSchema);
         }
       } catch (e) {
@@ -168,13 +168,13 @@ function isValidPassword(user, password) {
 }
 
 // motor de vistas
-app.set("views", "./views");
+app.set("views", "./public/views");
 
 app.engine(
   ".hbs",
   hbs.engine({
     defaultLayout: "main",
-    layoutsDir: "./views/layouts",
+    layoutsDir: "./public/views/layouts",
     extname: ".hbs",
   })
 );
