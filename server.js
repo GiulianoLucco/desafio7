@@ -92,7 +92,7 @@ passport.use(
           telefono: req.body.telefono,
         });
         if (UsuarioSchema) {
-          await registroUsuario(user);
+          await registroUsuario(UsuarioSchema);
           return done(null, UsuarioSchema);
         }
       } catch (e) {
