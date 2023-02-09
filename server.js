@@ -14,6 +14,7 @@ const bCrypt = require("bcrypt");
 const mongoose = require("mongoose");
 const UsuarioSchema = require("./src/models/estudiantes.model.js");
 
+const Producto = require("./src/clases/Producto.class.js");
 const Carrito = require("./src/DAOs/carrito.js");
 const ProductosC = require("./src/DAOs/productosDb");
 const { options } = require("./src/options/mariaDb");
@@ -22,6 +23,7 @@ const Messages = require("./src/DAOs/menssagesDb");
 const Tables = require("./src/models/createTable.js");
 const passport = require("passport");
 const { Strategy } = require("passport-local");
+const { graphqlHTTP } = require("express-graphql");
 
 const pino = require("pino");
 
@@ -30,6 +32,8 @@ const { rutasUsuario } = require("./src/Routes/rutasUsuario.js");
 const { rutasCarrito } = require("./src/Routes/rutasCarrito.js");
 const { rutasInfo } = require("./src/Routes/rutasInfo.js");
 const { routerProductos } = require("./src/Routes/rutas.Producto.js");
+const productosSchema = require("./src/schema/productos.schema.js");
+const { graphql } = require("graphql");
 
 const loggerError = pino("error.log");
 const loggerWarn = pino("warning.log");
@@ -191,6 +195,19 @@ app.use("/", rutasUsuario);
 app.use("/", rutasCarrito);
 app.use("/", rutasInfo);
 app.use("/productos", routerProductos);
+app.use(
+  "/graphql",
+  routerProductos,
+  graphqlHTTP({
+    schema: productosSchema,
+    rootValue: {
+      getAllP: Producto.getAll,
+      getId: Producto.getById,
+      addProducto: Producto.addProduct,
+    },
+    graphql: true,
+  })
+);
 
 app.use(express.static("public"));
 

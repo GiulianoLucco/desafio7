@@ -1,5 +1,5 @@
 const fs = require("fs");
-const JSONTransport = require("nodemailer/lib/json-transport");
+
 class Producto {
   instance;
   constructor() {

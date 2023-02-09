@@ -1,5 +1,17 @@
 [
   {
+    "id": 5,
+    "timeStamp": 1675901746283
+  },
+  {
+    "title": "pan",
+    "price": 121234,
+    "thumbnail": "asdasdasasdasd",
+    "stock": 101,
+    "id": 4,
+    "timeStamp": 1674420582208
+  },
+  {
     "title": "queso",
     "price": 121234,
     "thumbnail": "asdasdasasdasd",
@@ -23,11 +35,10 @@
     "id": 1
   },
   {
-    "title": "pan",
-    "price": 121234,
-    "thumbnail": "asdasdasasdasd",
-    "stock": 101,
-    "id": 4,
-    "timeStamp": 1674420582208
+    "marca": "Honda",
+    "modelo": "civic",
+    "anio": 2010,
+    "id": 6,
+    "timeStamp": 1675902287279
   }
 ]
