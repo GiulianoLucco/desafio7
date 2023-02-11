@@ -33,7 +33,7 @@ const { rutasCarrito } = require("./src/Routes/rutasCarrito.js");
 const { rutasInfo } = require("./src/Routes/rutasInfo.js");
 const { routerProductos } = require("./src/Routes/rutas.Producto.js");
 const productosSchema = require("./src/schema/productos.schema.js");
-const { graphql } = require("graphql");
+const productosController = require("./src/controller/productoController.js");
 
 const loggerError = pino("error.log");
 const loggerWarn = pino("warning.log");
@@ -197,15 +197,14 @@ app.use("/", rutasInfo);
 app.use("/productos", routerProductos);
 app.use(
   "/graphql",
-  routerProductos,
   graphqlHTTP({
     schema: productosSchema,
     rootValue: {
-      getAllP: Producto.getAll,
-      getId: Producto.getById,
-      addProducto: Producto.addProduct,
+      getAllP: productosController.getAllP,
+      getId: productosController.getId,
+      addProducto: productosController.addProducto,
     },
-    graphql: true,
+    graphiql: true,
   })
 );
 
