@@ -10,9 +10,6 @@ const MongoStore = require("connect-mongo");
 const advancedOptions = { useNewUrlParser: true, useUnifiedTopology: true };
 const cookieParser = require("cookie-parser");
 const hbs = require("express-handlebars");
-const bCrypt = require("bcrypt");
-const mongoose = require("mongoose");
-const UsuarioSchema = require("./src/models/estudiantes.model.js");
 
 const Producto = require("./src/clases/Producto.class.js");
 const Carrito = require("./src/DAOs/carrito.js");
@@ -20,14 +17,14 @@ const ProductosC = require("./src/DAOs/productosDb");
 const { options } = require("./src/options/mariaDb");
 const { optionsSqlite } = require("./src/options/sqlite");
 const Messages = require("./src/DAOs/menssagesDb");
+const messageMongo = require("./src/DAOs/menssages-mongo.dao.js");
 const Tables = require("./src/models/createTable.js");
 const passport = require("passport");
-const { Strategy } = require("passport-local");
+
 const { graphqlHTTP } = require("express-graphql");
 
 const pino = require("pino");
 
-const { registroUsuario } = require("./src/controller/registroUsuario.js");
 const { rutasUsuario } = require("./src/Routes/rutasUsuario.js");
 const { rutasCarrito } = require("./src/Routes/rutasCarrito.js");
 const { rutasInfo } = require("./src/Routes/rutasInfo.js");
@@ -43,15 +40,13 @@ loggerError.level = "error";
 loggerWarn.leve = "warn";
 loggerInfo.level = "info";
 
-const localStrategy = Strategy;
-
 const app = express();
 
 const httpServer = new HttpServer(app);
 const io = new IOServer(httpServer);
 
 let prod = new ProductosC("articulos", options);
-let mens = new Messages("mensajes", optionsSqlite);
+let mens = new messageMongo("mensajes", config);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -72,105 +67,8 @@ app.use(
     },
   })
 );
-
 app.use(passport.initialize());
 app.use(passport.session());
-
-passport.use(
-  "register",
-  new localStrategy(
-    { passReqToCallback: true },
-    async (req, username, password, done) => {
-      console.log("register", username + password);
-      mongoose.connect(
-        "mongodb+srv://Giuliano22:Dinero10@cluster0.d1wcvpe.mongodb.net/?retryWrites=true&w=majority"
-      );
-
-      try {
-        UsuarioSchema.create({
-          username: req.body.username,
-          password: createHash(password),
-          nombre: req.body.nombre,
-          direccion: req.body.direccion,
-          edad: req.body.edad,
-          telefono: req.body.telefono,
-        });
-        if (UsuarioSchema) {
-          await registroUsuario(UsuarioSchema);
-          return done(null, UsuarioSchema);
-        }
-      } catch (e) {
-        return done(e, null);
-      }
-    }
-  )
-);
-
-passport.use(
-  "login",
-  new localStrategy((username, password, done) => {
-    mongoose.connect(
-      "mongodb+srv://Giuliano22:Dinero10@cluster0.d1wcvpe.mongodb.net/?retryWrites=true&w=majority"
-    );
-    try {
-      UsuarioSchema.findOne(
-        {
-          username,
-        },
-        (err, user) => {
-          if (err) {
-            return done(err, null);
-          }
-
-          if (!user) {
-            return done(null, false);
-          }
-
-          if (!isValidPassword(user, password)) {
-            return done(null, false);
-          }
-
-          return done(null, user);
-        }
-      );
-    } catch (e) {
-      return done(e, null);
-    }
-  })
-);
-
-/*app.use((req, res, next) => {
-  loggerInfo.info(
-    `Peticion entrante---> Ruta: ${req.url}, metodo: ${req.method}`
-  );
-  next();
-});*/
-
-//serializar y deserializar
-let datos = null;
-
-passport.serializeUser((usuario, done) => {
-  datos = usuario;
-  app.use(function (req, res, next) {
-    res.locals.currentUser = req.usuario;
-    next();
-  });
-  done(null, usuario._id);
-});
-
-passport.deserializeUser((id, done) => {
-  UsuarioSchema.findById(id, done);
-});
-
-//
-function createHash(password) {
-  return bCrypt.hashSync(password, bCrypt.genSaltSync(10), null);
-}
-
-function isValidPassword(user, password) {
-  return bCrypt.compareSync(password, user.password);
-}
-
 // motor de vistas
 app.set("views", "./public/views");
 

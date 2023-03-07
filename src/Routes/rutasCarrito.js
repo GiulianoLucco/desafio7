@@ -1,33 +1,53 @@
 const express = require("express");
-const Carrito = require("../DAOs/carrito.js");
-const path = require("path");
+const CarritoMongo = require("../DAOs/carrito-mongo.dao.js");
+import("../middlewares/passport.middleware.js");
+const passport = require("passport");
 
 const rutasCarrito = express.Router();
 
-const carrito = new Carrito();
-rutasCarrito.get("/carrito", async (req, res) => {
-  const idList = await carrito.getAll();
-  const carr = idList[0];
-  const listProd = carr.productos;
+const carrito = new CarritoMongo();
 
-  const nombreProd = listProd.forEach((element) => {
-    return element.nombre;
-  });
+rutasCarrito.get(
+  "/carrito",
+  passport.authenticate("jwt", { session: false }),
+  async (req, res) => {
+    const idUser = req.user[0].username;
+    const carritos = await carrito.getAll(idUser);
 
-  res.render(path.join(process.cwd(), "/public/views/carrito.hbs"), {
-    list: nombreProd,
-  });
-});
+    res.send(carritos);
+  }
+);
 
-rutasCarrito.post("/addToCarrito", async (req, res) => {
-  const idProducto = req.body.idProduct;
+rutasCarrito.post(
+  "/carrito/:id/cant/:cant",
+  passport.authenticate("jwt", { session: false }),
+  async (req, res) => {
+    console.log(req.user[0].username);
+    idUser = req.user[0].username;
+    direccion = req.user[0].direccion;
+    const createCarrito = await carrito.addProductToCart(
+      req.params.id,
+      req.params.cant,
+      idUser,
+      direccion
+    );
+    res.send(createCarrito);
+  }
+);
 
-  const productoAgregado = await carrito.addProductToCarrito(idProducto);
-  res.send(productoAgregado);
-});
+rutasCarrito.post(
+  "/carrito",
+  passport.authenticate("jwt", { session: false }),
+  async (req, res) => {
+    idUser = req.user[0].username;
+    direccion = req.user[0].direccion;
+    const ordenRealizada = await carrito.pushOrden(idUser, direccion);
+    res.send(ordenRealizada);
+  }
+);
 
 rutasCarrito.delete("/deleteToCarrito", async (req, res) => {
-  const idProduct = req.body.idProduct;
+  const idProduct = req.params.id;
   const productoDelete = await carrito.producDelete(idProduct);
   res.send(productoDelete);
 });

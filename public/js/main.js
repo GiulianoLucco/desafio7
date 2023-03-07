@@ -103,8 +103,8 @@ function render(data) {
     .map((elemento) => {
       return `<div>
                 <strong>${elemento.email}</strong>:
-                <em>${elemento.nombre}</em>
-                <em>${elemento.date}</em></div>
+                <em>${elemento.tipo}</em>
+                <em>${elemento.cuerpo}</em></div>
         `;
     })
     .join(" ");
@@ -114,12 +114,8 @@ function render(data) {
 function addMessage() {
   const message = {
     email: document.getElementById("email").value,
-    nombre: document.getElementById("nombre").value,
-    apellido: document.getElementById("apellido").value,
-    edad: document.getElementById("edad").value,
-    alias: document.getElementById("alias").value,
-    urlA: document.getElementById("urlA").value,
-    text: document.getElementById("text").value,
+    tipo: document.getElementById("tipo").value,
+    cuerpo: document.getElementById("cuerpo").value,
   };
 
   socket.emit("new-message", message);
