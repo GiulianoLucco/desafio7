@@ -1,0 +1,159 @@
+{
+	"info": {
+		"_postman_id": "32142f61-a02e-404b-bc63-507a9710f675",
+		"name": "Productos",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "23183959"
+	},
+	"item": [
+		{
+			"name": "Getall Productos",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n        \"title\": \"9 de Oro\",\r\n        \"price\": 230,\r\n        \"stock\": 310,\r\n        \"thumbnail\": \"prhotos.jpg\",\r\n        \"category\":\"galletas\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8082/productos/golosinas",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8082",
+					"path": [
+						"productos",
+						"golosinas"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Del prod ID",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"nombre\":\"hoasasdasdasdasdsadd\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8081/cookie",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"cookie"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetbyID",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"nombre\":\"dasd asdasd\",\r\n\"codigo\":2,\r\n\"descripcion\":\"Maquina de soldar stanley\",\r\n\"precio\":320.45,\r\n\"foto\":\r\n\"https://firebasestorage.googleapis.com/v0/b/ferrimac-react.appspot.com/o/soldadorain.webp?alt=media&token=e932bcba-43bb-4d45-a464-6e7410dbd658\",\r\n\"stock\":5\r\n\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8082/productos/id/?id=",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8082",
+					"path": [
+						"productos",
+						"id",
+						""
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": ""
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Put ID",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8082/productos/?id=",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8082",
+					"path": [
+						"productos",
+						""
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": ""
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get by category",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "DeleteALL",
+			"request": {
+				"method": "DELETE",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "New Request",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		}
+	]
+}

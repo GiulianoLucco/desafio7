@@ -1,0 +1,86 @@
+{
+	"info": {
+		"_postman_id": "44cb9903-7bcd-41ba-8c01-6a4172be59ee",
+		"name": "Carrito",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "23183959"
+	},
+	"item": [
+		{
+			"name": "POST ORDEN",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"nombre\": \"qweasdasd\",\r\n    \"descripcion\": \"Papiasdasdastas\",\r\n    \"codigo\": 123,\r\n    \"foto\": \"//firebasestorage.googleapis.com/v0/b/ferrimac-react.appspot.com/o/hidro1.webp?alt=media&token=6aa2891b-7f0e-4707-942b-61ce7b70278c\",\r\n    \"precio\": 312.45,\r\n    \"stock\": 10\r\n  }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8081/api/carritos/H7nohfJXZTiXU0Dhfb0H/productos/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"api",
+						"carritos",
+						"H7nohfJXZTiXU0Dhfb0H",
+						"productos",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get carrito",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "Post Product to carrito",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoibHVjY283NEBnbWFpbC5jb20iLCJpYXQiOjE2NzgyMjY4MiwiZXhwIjoxNjc4MjMwNDI2fQ.YDDpxFVRGD8vRD8xlejirpBfffBCPV9kjqOae5zAGqA",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:8082/carrito/6407a751548c0667b30f4d86/cant/100",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8082",
+					"path": [
+						"carrito",
+						"6407a751548c0667b30f4d86",
+						"cant",
+						"100"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
